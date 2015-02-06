@@ -15,6 +15,9 @@ call    new_line
 
 mov     [b_disk], dl
 
+mov     al, dl
+call    pprint_hex8
+
 jmp     read_disk
 
 ;; read_disk
@@ -49,7 +52,7 @@ reset_disk:
 b_disk: db 0 ;; store the boot disk, make sure it dosen't get lost
 
 ;; Data section
-splash: db "pOS Bootloader :: Loading stage 2", 0
+splash: db "loading stage 2", 0
 
 ;; Pad rest of bootloader with 0s
 times 510 - ($ - $$) db 0
