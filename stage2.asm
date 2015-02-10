@@ -9,6 +9,17 @@ org 0x5000
 bits 16
 
 main:
+    mov     si, load_success
+    call    print_string_new_line
+    mov     ax, 0xde
+    call    pprint_hex8
+    mov     ax, 0xad
+    call    print_hex8
+    mov     ax, 0xbe
+    call    print_hex8
+    mov     ax, 0xef
+    call    print_hex8
+    jmp     $
 
 
 ;; Gets a key

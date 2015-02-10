@@ -53,30 +53,28 @@ new_line:
 ;; print_hex8
 ;; Print hex value of byte in AL in hex
 print_hex8:
-    pusha
+    push    ax
     mov     si, hex_chars      ;; si points to hex_chars
-    and     ax, 0x0F           ;; clear upper byte of AX
+    shr     al, 0x04           ;; move upper 4 bits of AL into lower 4 bits
     add     si, ax             ;; adjust si to point to correct char
     mov     al, [si]           ;; move character pointed to by si into al
 
-    mov             ah, 0x0E   ;; print char at current cursor position
-    mov             bh, 0x00   ;; page number
-    mov             bl, 0x08   ;; properties
+    mov     ah, 0x0E           ;; print char at current cursor position
+    mov     bh, 0x00           ;; page number
+    mov     bl, 0x08           ;; properties
+    int     0x10               ;; returns nothing
 
-    int             0x10       ;; returns nothing
-    popa
-    ret
+    mov     si, hex_chars      ;; si points to hex_chars
 
-;; print_hex16
-;; prints word stored in AL in hex
-print_hex16:
-    push    ax
-    push    ax          ;; store ax on the stack
-    shr     ax, 0x04    ;; push the top of AH down to AL
-    call    print_hex8  ;; print the higher byte
-    pop     ax          ;; original lower AL now in AL
-    call    print_hex8  ;; print the lower byte
     pop     ax
+    shl     al, 0x04
+    shr     al, 0x04
+    add     si, ax              ;; adjust si to point to correct char
+    mov     al, [si]           ;; move character pointed to by si into al
+
+    mov     ah, 0x0E
+    int     0x10
+
     ret
 
 ;; pprint_hex8
@@ -90,16 +88,6 @@ pprint_hex8:
     call    print_hex8
     ret
 
-;; pprint_hex16
-;; Pretty print byte in AX in hex
-;; includes "0x" prefix
-pprint_hex16:
-    pusha
-    mov     si, hex_prefix
-    call    print_string
-    popa
-    call    print_hex16
-    ret
 
-hex_prefix: db "0x", 0
+hex_prefix: db "0x",0
 hex_chars: db "0123456789ABCDEF"
